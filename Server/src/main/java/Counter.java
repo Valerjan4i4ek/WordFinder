@@ -53,35 +53,14 @@ public class Counter {
                     }
                 }
 //                System.out.println(file.getName() + " совпадений в файле " + keywordInFileCount);
-                map.put(file.getName(), keywordInFileCount);
+                if(keywordInFileCount > 0){
+                    map.put(file.getName(), keywordInFileCount);
+                }
 
                 return keywordInFileCount;
             }
         } catch (IOException e) {
             return 0;
-        }
-    }
-
-    public Map<String, Integer> returnMap(File file){
-        finder();
-        try {
-            try (Scanner in = new Scanner(file)) {
-                int keywordInFileCount = 0;
-                while (in.hasNextLine()) {
-                    String line = in.nextLine();
-                    for(int i = 0; i < line.length(); i++) {
-                        if(line.indexOf(keyword, i) == i) {
-                            keywordInFileCount++;
-                        }
-                    }
-                }
-//                System.out.println(file.getName() + " совпадений в файле " + keywordInFileCount);
-                map.put(file.getName(), keywordInFileCount);
-
-                return map;
-            }
-        } catch (IOException e) {
-            return null;
         }
     }
 
