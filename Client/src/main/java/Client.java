@@ -6,6 +6,8 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -43,10 +45,11 @@ public class Client {
             authorization();
         }
         else{
-            connection().lasLogin(login, new Date());
+            connection().lastLogin(login, new Timestamp(System.currentTimeMillis()));
             changes();
             System.out.println();
             findTheWord();
+            findTheWordAgain();
         }
     }
     public static void checkDirectory() throws IOException, NotBoundException, RemoteException{
@@ -55,8 +58,15 @@ public class Client {
 
     public static void changes() throws IOException, NotBoundException, RemoteException{
         List<String> list = connection().changes(new File(directory), user.getUserName());
-        for (int i = 0; i < list.size(); i++) {
-            System.out.println(list.get(i) + " был изменен");
+        if(list != null && !list.isEmpty()){
+            for (int i = 0; i < list.size(); i++) {
+                System.out.println(list.get(i) + " был изменен");
+            }
+        }
+        else{
+            System.out.println();
+            System.out.println("изменений в файлах нет");
+            System.out.println();
         }
     }
 
@@ -71,6 +81,18 @@ public class Client {
                 connection().addRequest(keyword, entry.getKey(), user.getUserName());
             }
         }
+    }
 
+    public static void findTheWordAgain() throws IOException, NotBoundException, RemoteException{
+        System.out.println("Вы желаете выполнить повторный поиск? Y or N");
+        String s = reader.readLine();
+
+        if(s.equals("Y")){
+            findTheWord();
+            findTheWordAgain();
+        }
+        else if(s.equals("N")){
+            System.exit(1);
+        }
     }
 }

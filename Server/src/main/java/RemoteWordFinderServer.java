@@ -1,5 +1,6 @@
 import java.io.File;
 import java.rmi.RemoteException;
+import java.sql.Timestamp;
 import java.util.*;
 
 public class RemoteWordFinderServer implements WordFinder{
@@ -80,18 +81,21 @@ public class RemoteWordFinderServer implements WordFinder{
 //        }
 //        return listNames;
 
-        List<UserLogin> listLogins = sql.checkUserLogin();
+        List<UserLogin> listLogins = sql.checkUserLogin(login);
         File[] files = directory.listFiles();
         List<String> listNames = new ArrayList<>();
 
         if(files != null){
             for(File file : files){
                 if(!file.isDirectory()){
-                    for (int i = listLogins.size()-1; i > 0; i--) {
-                        if(listLogins.get(i).getLogin().equals(login)){
-                            if(file.lastModified() > listLogins.get(i).getLastLogin().getTime()){
-                                listNames.add(file.getName());
-                            }
+                    for (int i = listLogins.size()-2; i > 0; i--) {
+                        if(file.lastModified() > listLogins.get(i).getLastLogin().getTime()){
+                            System.out.println(file.lastModified() + " " + listLogins.get(i).getLastLogin().getTime());
+                            listNames.add(file.getName());
+//                            break;
+                        }
+                        else{
+                            break;
                         }
 
                     }
@@ -102,7 +106,7 @@ public class RemoteWordFinderServer implements WordFinder{
     }
 
     @Override
-    public String lasLogin(String login, Date lastLogin) throws RemoteException {
+    public String lastLogin(String login, Timestamp lastLogin) throws RemoteException {
           incrementUserLogin();
           sql.addUserLogin(new UserLogin(countUserLogin, login, lastLogin));
           return "";

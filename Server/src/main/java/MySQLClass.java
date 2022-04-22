@@ -130,7 +130,7 @@ public class MySQLClass {
                 conn = getConnection("WordFinder");
                 st = conn.createStatement();
                 st.executeUpdate("CREATE TABLE IF NOT EXISTS WordFinder.userLogin " +
-                        "(id INT NOT NULL, login VARCHAR(20) NOT NULL, lastLogin DATE NOT NULL)");
+                        "(id INT NOT NULL, login VARCHAR(20) NOT NULL, lastLogin TIMESTAMP NOT NULL)");
             } finally {
                 try{
                     if(conn != null){
@@ -262,7 +262,7 @@ public class MySQLClass {
                 ps = conn.prepareStatement("INSERT INTO userLogin (id, login, lastLogin) VALUES (?, ?, ?)");
                 ps.setInt(1, userLogin.getId());
                 ps.setString(2, userLogin.getLogin());
-                ps.setDate(3, new java.sql.Date(userLogin.getLastLogin().getTime()));
+                ps.setTimestamp(3, userLogin.getLastLogin());
                 ps.executeUpdate();
             } finally {
                 try{
@@ -368,6 +368,117 @@ public class MySQLClass {
         return list;
     }
 
+    public List<UserLogin> checkUserLogin(){
+        List<UserLogin> list = new LinkedList<>();
+
+        try{
+            Connection conn = null;
+            PreparedStatement ps = null;
+            ResultSet rs = null;
+
+            try{
+                conn = getConnection("WordFinder");
+                String query = "SELECT * FROM userLogin";
+                ps = conn.prepareStatement(query);
+                rs = ps.executeQuery();
+
+                while (rs.next()){
+                    try{
+                        int id = rs.getInt("id");
+                        String login = rs.getString("login");
+                        Timestamp lastLogin = rs.getTimestamp("lastLogin");
+                        UserLogin userLogin = new UserLogin(id, login, lastLogin);
+                        list.add(userLogin);
+                    } catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }
+            } finally {
+                try{
+                    if(conn != null){
+                        conn.close();
+                    }
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+                try{
+                    if(ps != null){
+                        ps.close();
+                    }
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+                try{
+                    if(rs != null){
+                        rs.close();
+                    }
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+
+    public List<UserLogin> checkUserLogin(String log){
+        List<UserLogin> list = new LinkedList<>();
+
+        try{
+            Connection conn = null;
+            PreparedStatement ps = null;
+            ResultSet rs = null;
+
+            try{
+                conn = getConnection("WordFinder");
+                String query = "SELECT * FROM userLogin WHERE login = ?";
+                ps = conn.prepareStatement(query);
+                ps.setString(1, log);
+                rs = ps.executeQuery();
+
+                while (rs.next()){
+                    try{
+                        int id = rs.getInt("id");
+                        String login = rs.getString("login");
+                        Timestamp lastLogin = rs.getTimestamp("lastLogin");
+                        UserLogin userLogin = new UserLogin(id, login, lastLogin);
+                        list.add(userLogin);
+                    } catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }
+            } finally {
+                try{
+                    if(conn != null){
+                        conn.close();
+                    }
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+                try{
+                    if(ps != null){
+                        ps.close();
+                    }
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+                try{
+                    if(rs != null){
+                        rs.close();
+                    }
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+
     public String checkUser(String login, String password) {
         try {
             Connection conn = null;
@@ -443,61 +554,6 @@ public class MySQLClass {
                         int userId = rs.getInt("documentId");
                         CustomerRequest request1 = new CustomerRequest(id, request, documentId, userId);
                         list.add(request1);
-                    } catch (Exception e){
-                        e.printStackTrace();
-                    }
-                }
-            } finally {
-                try{
-                    if(conn != null){
-                        conn.close();
-                    }
-                } catch (Exception e){
-                    e.printStackTrace();
-                }
-                try{
-                    if(ps != null){
-                        ps.close();
-                    }
-                } catch (Exception e){
-                    e.printStackTrace();
-                }
-                try{
-                    if(rs != null){
-                        rs.close();
-                    }
-                } catch (Exception e){
-                    e.printStackTrace();
-                }
-            }
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-
-        return list;
-    }
-
-    public List<UserLogin> checkUserLogin(){
-        List<UserLogin> list = new LinkedList<>();
-
-        try{
-            Connection conn = null;
-            PreparedStatement ps = null;
-            ResultSet rs = null;
-
-            try{
-                conn = getConnection("WordFinder");
-                String query = "SELECT * FROM userLogin";
-                ps = conn.prepareStatement(query);
-                rs = ps.executeQuery();
-
-                while (rs.next()){
-                    try{
-                        int id = rs.getInt("id");
-                        String login = rs.getString("login");
-                        Date lastLogin = rs.getDate("lastLogin");
-                        UserLogin userLogin = new UserLogin(id, login, lastLogin);
-                        list.add(userLogin);
                     } catch (Exception e){
                         e.printStackTrace();
                     }

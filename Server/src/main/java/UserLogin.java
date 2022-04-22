@@ -1,11 +1,12 @@
+import java.sql.Timestamp;
 import java.util.Date;
 
 public class UserLogin {
     private int id;
     private String login;
-    private Date lastLogin;
+    private Timestamp lastLogin;
 
-    public UserLogin(int id, String login, Date lastLogin) {
+    public UserLogin(int id, String login, Timestamp lastLogin) {
         this.id = id;
         this.login = login;
         this.lastLogin = lastLogin;
@@ -27,11 +28,11 @@ public class UserLogin {
         this.login = login;
     }
 
-    public Date getLastLogin() {
+    public Timestamp getLastLogin() {
         return lastLogin;
     }
 
-    public void setLastLogin(Date lastLogin) {
+    public void setLastLogin(Timestamp lastLogin) {
         this.lastLogin = lastLogin;
     }
 }
