@@ -368,8 +368,8 @@ public class MySQLClass {
         return list;
     }
 
-    public List<UserLogin> checkUserLogin(){
-        List<UserLogin> list = new LinkedList<>();
+    public List<Integer> checkUserLogin(){
+        List<Integer> list = new LinkedList<>();
 
         try{
             Connection conn = null;
@@ -378,20 +378,13 @@ public class MySQLClass {
 
             try{
                 conn = getConnection("WordFinder");
-                String query = "SELECT * FROM userLogin";
+                String query = "SELECT id FROM userLogin";
                 ps = conn.prepareStatement(query);
                 rs = ps.executeQuery();
 
                 while (rs.next()){
-                    try{
-                        int id = rs.getInt("id");
-                        String login = rs.getString("login");
-                        Timestamp lastLogin = rs.getTimestamp("lastLogin");
-                        UserLogin userLogin = new UserLogin(id, login, lastLogin);
-                        list.add(userLogin);
-                    } catch (Exception e){
-                        e.printStackTrace();
-                    }
+                    int id = rs.getInt("id");
+                    list.add(id);
                 }
             } finally {
                 try{
@@ -419,7 +412,6 @@ public class MySQLClass {
         } catch (Exception e){
             e.printStackTrace();
         }
-
         return list;
     }
 
@@ -532,8 +524,8 @@ public class MySQLClass {
         return "";
     }
 
-    public List<CustomerRequest> checkRequest(){
-        List<CustomerRequest> list = new LinkedList<>();
+    List<Integer> checkRequest(){
+        List<Integer> list = new LinkedList<>();
 
         try{
             Connection conn = null;
@@ -542,21 +534,61 @@ public class MySQLClass {
 
             try{
                 conn = getConnection("WordFinder");
-                String query = "SELECT * FROM requests";
+                String query = "SELECT id FROM requests";
                 ps = conn.prepareStatement(query);
                 rs = ps.executeQuery();
 
                 while (rs.next()){
-                    try{
-                        int id = rs.getInt("id");
-                        String request = rs.getString("request");
-                        int documentId = rs.getInt("documentId");
-                        int userId = rs.getInt("documentId");
-                        CustomerRequest request1 = new CustomerRequest(id, request, documentId, userId);
-                        list.add(request1);
-                    } catch (Exception e){
-                        e.printStackTrace();
+                    int id = rs.getInt("id");
+                    list.add(id);
+                }
+            } finally {
+                try{
+                    if(conn != null){
+                        conn.close();
                     }
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+                try{
+                    if(ps != null){
+                        ps.close();
+                    }
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+                try{
+                    if(rs != null){
+                        rs.close();
+                    }
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+
+    public List<Integer> checkDocumentsId(){
+        List<Integer> list = new LinkedList<>();
+
+        try{
+            Connection conn = null;
+            PreparedStatement ps = null;
+            ResultSet rs = null;
+
+            try{
+                conn = getConnection("WordFinder");
+                String query = "SELECT id FROM documents";
+                ps = conn.prepareStatement(query);
+                rs = ps.executeQuery();
+
+                while (rs.next()){
+                    int id = rs.getInt("id");
+                    list.add(id);
                 }
             } finally {
                 try{
@@ -643,7 +675,50 @@ public class MySQLClass {
         return list;
     }
 
-    public List<User> checkAuthorization2 (){
+    public List<Integer> checkUserId(){
+        List<Integer> list = new LinkedList<>();
+
+        try{
+            Connection conn = null;
+            PreparedStatement ps = null;
+            ResultSet rs = null;
+
+            try{
+                conn = getConnection("WordFinder");
+                String query = "SELECT id FROM authorization";
+                ps = conn.prepareStatement(query);
+                rs = ps.executeQuery();
+            } finally {
+                try{
+                    if(conn != null){
+                        conn.close();
+                    }
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+                try{
+                    if(ps != null){
+                        ps.close();
+                    }
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+                try{
+                    if(rs != null){
+                        rs.close();
+                    }
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+
+    public List<User> checkAuthorization(){
         List<User> list = new LinkedList<>();
 
         try{

@@ -17,13 +17,25 @@ public class Client {
     public static final String UNIQUE_BINDING_NAME = "server.WordFinder";
     static BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
     private static User user;
-    private static String directory = "Server/documents";
+//    private static String directory = "Server/documents";
+    static Registry registry;
+    static WordFinder wordFinder;
 
-    public static WordFinder connection() throws IOException, NotBoundException, RemoteException{
-        final Registry registry = LocateRegistry.getRegistry("127.0.0.1", 2732);
-        WordFinder wordFinder = (WordFinder) registry.lookup(UNIQUE_BINDING_NAME);
-        return wordFinder;
+    static {
+        try {
+            registry = LocateRegistry.getRegistry("127.0.0.1", 2732);
+            wordFinder = (WordFinder) registry.lookup(UNIQUE_BINDING_NAME);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        } catch (NotBoundException e) {
+            e.printStackTrace();
+        }
     }
+
+//    public static WordFinder connection() throws IOException, NotBoundException, RemoteException{
+//
+//        return wordFinder;
+//    }
 
     public Client() throws  IOException, NotBoundException{
     }
@@ -39,13 +51,13 @@ public class Client {
         String login = reader.readLine();
         String password = reader.readLine();
         user = new User(login, password);
-        String result = connection().checkAuthorization(login, password);
+        String result = wordFinder.checkAuthorization(login, password);
         System.out.println(result);
         if(result.equals("INCORRECT PASSWORD")){
             authorization();
         }
         else{
-            connection().lastLogin(login, new Timestamp(System.currentTimeMillis()));
+            wordFinder.lastLogin(login, new Timestamp(System.currentTimeMillis()));
             changes();
             System.out.println();
             findTheWord();
@@ -53,11 +65,11 @@ public class Client {
         }
     }
     public static void checkDirectory() throws IOException, NotBoundException, RemoteException{
-        connection().checkDirectory(new File(directory));
+        wordFinder.checkDirectory();
     }
 
     public static void changes() throws IOException, NotBoundException, RemoteException{
-        List<String> list = connection().changes(new File(directory), user.getUserName());
+        List<String> list = wordFinder.changes(user.getUserName());
         if(list != null && !list.isEmpty()){
             for (int i = 0; i < list.size(); i++) {
                 System.out.println(list.get(i) + " был изменен");
@@ -74,11 +86,11 @@ public class Client {
         System.out.println("Введите слово:");
         String keyword = reader.readLine();
 
-        Map<String, Integer> map = connection().findTheWord(new File(directory), keyword);
+        Map<String, Integer> map = wordFinder.findTheWord(keyword);
         if(map != null && !map.isEmpty()){
             for(Map.Entry<String, Integer> entry : map.entrySet()){
                 System.out.println(entry.getKey() + " совпадений в файле " + entry.getValue());
-                connection().addRequest(keyword, entry.getKey(), user.getUserName());
+                wordFinder.addRequest(keyword, entry.getKey(), user.getUserName());
             }
         }
     }

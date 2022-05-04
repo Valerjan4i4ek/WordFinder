@@ -5,10 +5,11 @@ import java.util.*;
 
 public class RemoteWordFinderServer implements WordFinder{
     MySQLClass sql = new MySQLClass();
-    List<User> listUsers;
-    List<Documents> listDocuments;
-    List<CustomerRequest> listRequest;
-    List<UserLogin> listUserLogin;
+    private static final String directory = "Server/documents";
+    List<Integer> listUsers;
+    List<Integer> listDocumentsId;
+    List<Integer> listRequest;
+    List<Integer> listUserLogin;
     int countAuthorization;
     int countDocuments;
     int countRequest;
@@ -39,9 +40,10 @@ public class RemoteWordFinderServer implements WordFinder{
     }
 
     @Override
-    public String checkDirectory(File directory) throws RemoteException {
+    public String checkDirectory() throws RemoteException {
         List<String> list = sql.checkFileName();
-        File[] files = directory.listFiles();
+//        File[] files = directory.listFiles();
+        File[] files = new File(directory).listFiles();
 
         if(files != null){
             for(File file : files){
@@ -61,28 +63,10 @@ public class RemoteWordFinderServer implements WordFinder{
     }
 
     @Override
-    public List<String> changes(File directory, String login) throws RemoteException {
-//        List<Documents> list = sql.checkDocuments();
-//        File[] files = directory.listFiles();
-//        List<String> listNames = new ArrayList<>();
-//
-//        if(files != null){
-//            for(File file : files){
-//                if(!file.isDirectory()){
-//                    for (int i = 0; i < list.size(); i++) {
-//                        if(file.getName().equals(list.get(i).getName())){
-//                            if(file.lastModified() > list.get(i).getDate().getTime()){
-//                                listNames.add(file.getName());
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//        return listNames;
+    public List<String> changes(String login) throws RemoteException {
 
         List<UserLogin> listLogins = sql.checkUserLogin(login);
-        File[] files = directory.listFiles();
+        File[] files = new File(directory).listFiles();
         List<String> listNames = new ArrayList<>();
 
         if(files != null){
@@ -91,8 +75,9 @@ public class RemoteWordFinderServer implements WordFinder{
                     for (int i = listLogins.size()-2; i > 0; i--) {
                         if(file.lastModified() > listLogins.get(i).getLastLogin().getTime()){
                             System.out.println(file.lastModified() + " " + listLogins.get(i).getLastLogin().getTime());
-                            listNames.add(file.getName());
-//                            break;
+                            while (listNames.size() < 1){
+                                listNames.add(file.getName());
+                            }
                         }
                         else{
                             break;
@@ -113,8 +98,8 @@ public class RemoteWordFinderServer implements WordFinder{
     }
 
     @Override
-    public Map<String, Integer> findTheWord(File directory, String keyword) throws RemoteException {
-        Counter counter = new Counter(directory, keyword);
+    public Map<String, Integer> findTheWord(String keyword) throws RemoteException {
+        Counter counter = new Counter(new File(directory), keyword);
         Map<String, Integer> map = counter.finder();
 
         return map;
@@ -123,7 +108,7 @@ public class RemoteWordFinderServer implements WordFinder{
     @Override
     public String addRequest(String request, String documentName, String userName) throws RemoteException {
         List<Documents> documentsList = sql.checkDocuments();
-        List<User> userList = sql.checkAuthorization2();
+        List<User> userList = sql.checkAuthorization();
 
         if(documentsList != null && !documentsList.isEmpty() && userList != null && !userList.isEmpty()){
             for (int i = 0; i < documentsList.size(); i++) {
@@ -141,7 +126,7 @@ public class RemoteWordFinderServer implements WordFinder{
     public void incrementRequest(){
         listRequest = sql.checkRequest();
         if(listRequest != null && !listRequest.isEmpty()){
-            countRequest = listRequest.get(listRequest.size()-1).getId();
+            countRequest = listRequest.get(listRequest.size()-1);
             countRequest++;
         }
         else{
@@ -152,7 +137,7 @@ public class RemoteWordFinderServer implements WordFinder{
     public void incrementUserLogin(){
         listUserLogin = sql.checkUserLogin();
         if(listUserLogin != null && !listUserLogin.isEmpty()){
-            countUserLogin = listUserLogin.get(listUserLogin.size()-1).getId();
+            countUserLogin = listUserLogin.get(listUserLogin.size()-1);
             countUserLogin++;
         }
         else{
@@ -161,9 +146,9 @@ public class RemoteWordFinderServer implements WordFinder{
     }
 
     public void incrementAuthorization(){
-        listUsers = sql.checkAuthorization2();
+        listUsers = sql.checkUserId();
         if(listUsers != null && !listUsers.isEmpty()){
-            countAuthorization = listUsers.get(listUsers.size()-1).getId();
+            countAuthorization = listUsers.get(listUsers.size()-1);
             countAuthorization++;
         }
         else{
@@ -172,9 +157,9 @@ public class RemoteWordFinderServer implements WordFinder{
     }
 
     public void incrementDocuments(){
-        listDocuments = sql.checkDocuments();
-        if(listDocuments != null && !listDocuments.isEmpty()){
-            countDocuments = listDocuments.get(listDocuments.size()-1).getId();
+        listDocumentsId = sql.checkDocumentsId();
+        if(listDocumentsId != null && !listDocumentsId.isEmpty()){
+            countDocuments = listDocumentsId.get(listDocumentsId.size()-1);
             countDocuments++;
         }
         else{
