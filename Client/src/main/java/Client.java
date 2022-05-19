@@ -75,6 +75,9 @@ public class Client {
                 System.out.println(list.get(i) + " был изменен");
             }
         }
+        else if(list.size() == 0){
+            System.out.println(" ");
+        }
         else{
             System.out.println();
             System.out.println("изменений в файлах нет");
