@@ -72,17 +72,22 @@ public class RemoteWordFinderServer implements WordFinder{
         if(files != null){
             for(File file : files){
                 if(!file.isDirectory()){
-                    for (int i = listLogins.size()-2; i > 0; i--) {
-                        if(file.lastModified() > listLogins.get(i).getLastLogin().getTime()){
-                            System.out.println(file.lastModified() + " " + listLogins.get(i).getLastLogin().getTime());
-                            while (listNames.size() < 1){
-                                listNames.add(file.getName());
+                    if(listLogins != null && !listLogins.isEmpty()){
+                        for (int i = listLogins.size()-1; i > 0; i--) {
+                            if(file.lastModified() > listLogins.get(i-1).getLastLogin().getTime()){
+                                System.out.println(file.lastModified() + " " + listLogins.get(i).getLastLogin().getTime());
+                                while (listNames.size() < 1){
+                                    listNames.add(file.getName());
+                                }
                             }
-                        }
-                        else{
-                            break;
-                        }
+                            else{
+                                break;
+                            }
 
+                        }
+                    }
+                    else{
+                        listNames.add(file.getName());
                     }
                 }
             }
